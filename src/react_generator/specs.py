@@ -11,7 +11,7 @@ class FileTemplate:
 
 @dataclass(frozen=True)
 class GeneratorSpec:
-    files: list[FileTemplate]
+    files: tuple[FileTemplate, ...]
     creates_folder: bool = False
     default_export: bool = False
     # overrides[flag] = {extension: template_alternatif}
@@ -22,36 +22,36 @@ SPECS: dict[str, GeneratorSpec] = {
     "component": GeneratorSpec(
         creates_folder=True,
         default_export=True,
-        files=[
+        files=(
             FileTemplate(".tsx", t.COMPONENT_TSX),
             FileTemplate(".module.scss", t.COMPONENT_SCSS),
             FileTemplate(".test.tsx", t.COMPONENT_TEST),
             FileTemplate(".types.ts", t.COMPONENT_TYPES),
-        ],
+        ),
     ),
     "service": GeneratorSpec(
-        files=[
+        files=(
             FileTemplate(".ts", t.SERVICE_FUNCTIONAL_TS),   # défaut = fonctions
             FileTemplate(".test.ts", t.SERVICE_TEST),
-        ],
+        ),
         overrides={"singleton": {".ts": t.SERVICE_TS}},     # --singleton = classe
     ),
-    "hook": GeneratorSpec(files=[
+    "hook": GeneratorSpec(files=(
         FileTemplate(".ts", t.HOOK_TS),
         FileTemplate(".test.ts", t.HOOK_TEST),
-    ]),
-    "redux": GeneratorSpec(files=[
+    )),
+    "redux": GeneratorSpec(files=(
         FileTemplate(".ts", t.REDUX_TS),
         FileTemplate(".test.ts", t.REDUX_TEST),
-    ]),
+    )),
     "context": GeneratorSpec(
         creates_folder=True,
         default_export=False,
-        files=[
+        files=(
             FileTemplate(".tsx", t.CONTEXT_TSX),
             FileTemplate(".types.ts", t.CONTEXT_TYPES),
             FileTemplate(".test.tsx", t.CONTEXT_TEST),
-        ],
+        ),
     ),
 }
 

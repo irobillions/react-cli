@@ -14,7 +14,7 @@ class Generator:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
 
-    def _resolve_files(self, spec: GeneratorSpec, flags) -> list[FileTemplate]:
+    def _resolve_files(self, spec: GeneratorSpec, flags) -> tuple[FileTemplate, ...]:
         """Applique les overrides de template pour les flags actifs.
         Sans flag concerné, renvoie les fichiers du spec inchangés."""
         override = {}
@@ -22,8 +22,8 @@ class Generator:
             override.update(spec.overrides.get(flag, {}))
         if not override:
             return spec.files
-        return [FileTemplate(f.extension, override.get(f.extension, f.template))
-                for f in spec.files]
+        return tuple(FileTemplate(f.extension, override.get(f.extension, f.template))
+                     for f in spec.files)
 
     def _barrel_content(self, spec: GeneratorSpec, formatted: str) -> str:
         lines = [
@@ -59,14 +59,20 @@ class Generator:
             return False
 
         written = []
+        pending = []
         for file_path, template in planned:
             if template is None:
                 content = self._barrel_content(spec, formatted)
             else:
                 content = templates.render(template, name=formatted, pascal=pascal, camel=camel)
-            if not dry_run:
+            pending.append((file_path, content))
+
+        if not dry_run:
+            for file_path, content in pending:
                 self.create_file(file_path, content)
-            written.append(file_path)
+            written = [p for p, _ in pending]
+        else:
+            written = [p for p, _ in pending]
 
         self._report(kind, written, dry_run)
         return True

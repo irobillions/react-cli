@@ -9,6 +9,8 @@ from react_generator.console import Colors, paint
 def split_path_name(path_name: str) -> tuple[str, str]:
     """'components/ui/Button' -> ('components/ui', 'Button')."""
     parts = path_name.strip("/").split("/")
+    if any(part in (".", "..") for part in parts):
+        raise ValueError(f"Path traversal détecté dans : {path_name!r}")
     name = parts[-1]
     path = "/".join(parts[:-1])
     return path, name
@@ -42,8 +44,15 @@ def main(argv=None) -> int:
         print(paint(f"✗ type inconnu : {args.kind!r}. Valides : {valid}", Colors.RED))
         return 2
 
-    path, name = split_path_name(args.path_name)
+    try:
+        path, name = split_path_name(args.path_name)
+    except ValueError as exc:
+        print(paint(f"✗ {exc}", Colors.RED))
+        return 2
     if args.path:
+        if any(part in (".", "..") for part in args.path.strip("/").split("/")):
+            print(paint(f"✗ chemin invalide : {args.path!r}", Colors.RED))
+            return 2
         path = args.path
     if not name:
         print(paint("✗ nom de schematic manquant", Colors.RED))
