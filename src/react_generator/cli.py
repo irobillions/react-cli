@@ -27,7 +27,6 @@ def build_parser() -> argparse.ArgumentParser:
     )
     gen.add_argument("path_name", help="Path + name, e.g. components/ui/Button")
     gen.add_argument("--path", help="Override the directory derived from path_name.")
-    gen.add_argument("--path", help="Override the directory derived from path_name.")
     gen.add_argument("--dry-run", action="store_true", help="Preview the files without writing anything.")
     gen.add_argument("--singleton", action="store_true",
                      help="Generate a service as a singleton class instead of functions.")
