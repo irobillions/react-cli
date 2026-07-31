@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]   # erreurs, pyflakes, tri des imports
+
+[project]
+name = "react-generator"
+version = "2.1.0"
+description = "Angular-CLI-style schematic generator for React"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Christ Bouka", email = "christbouka14@yahoo.fr" }]
+license = { text = "MIT" }
+
+[project.scripts]
+react-gen = "react_generator.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/react_generator"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
